@@ -59,7 +59,7 @@ public class ColorSensor extends Observable implements Runnable
 			LCD.clear( 6 );
 			LCD.drawString( "value: " + sample[ offset ], 0, 6 );
 			
-			borderFound = sample[ offset ] == 7.0;
+			borderFound = sample[ offset ] == 6.0;
 
 			if( prev != borderFound )
 			{

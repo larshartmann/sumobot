@@ -23,7 +23,6 @@ import lejos.utility.Delay;
 
 public class Robot implements Observer, Runnable{
 
-	@SuppressWarnings("unused")
 	public static void main(String[] args)
 	{
 		LCD.drawString( "Starting", 0, 0 );
@@ -44,12 +43,12 @@ public class Robot implements Observer, Runnable{
 	public Robot()
 	{
 		wheelDiameter = 3.0; // cm
-		trackWidth = 17.0; // cm		pilot.stop();
+		trackWidth = 19.0; // cm		pilot.stop();
 		moveMotor1 = new EV3LargeRegulatedMotor(MotorPort.D);
 		moveMotor2 = new EV3LargeRegulatedMotor(MotorPort.B);		
 		pilot = new DifferentialPilot(wheelDiameter, trackWidth, moveMotor1, moveMotor2);
 		//pilot.setMinRadius( 15 );
-		pilot.setTravelSpeed( 10 );
+		pilot.setTravelSpeed( standardSpeed );
 
 		rangeSensor = new RangeSensor();
 		rangeSensor.addObserver( this );
@@ -92,7 +91,9 @@ public class Robot implements Observer, Runnable{
 		LCD.clear();
 		LCD.drawString( "Running", 0, 4 );
 		
+		pilot.setTravelSpeed( maxSpeed );
 		pilot.rotate( 135 );
+		pilot.setTravelSpeed( standardSpeed );
 		
 		rangeSensor.begin();
 		color.begin();
@@ -140,7 +141,7 @@ public class Robot implements Observer, Runnable{
 			{
 				LCD.clear( 7 );
 				LCD.drawString( "Beast", 0, 7 );
-				pilot.setTravelSpeed( 100 );
+				pilot.setTravelSpeed( maxSpeed );
 		
 				if( ! beastModeStarted )
 				{
@@ -152,16 +153,24 @@ public class Robot implements Observer, Runnable{
 			{
 				if( beastModeStarted )
 				{
-					beastModeStarted = false;
-					LCD.clear( 7 );
-					pilot.setTravelSpeed( 12 );
-					pilot.stop();
+					if( border )
+					{	
+						beastModeStarted = false;
+						LCD.clear( 7 );
+						pilot.setTravelSpeed( standardSpeed );
+						pilot.stop();
+
+						pilot.travel( -7.0 );
+						pilot.rotate( 145, true );
+					}
 				}
 
 				if( border )
 				{	
-					pilot.travel( -15.0 );
-					pilot.rotate( 180, true );
+					pilot.setTravelSpeed( maxSpeed );
+					pilot.travel( -7.0 );
+					pilot.rotate( 145, true );
+					pilot.setTravelSpeed( standardSpeed );
 				}
 				else
 				{
@@ -232,4 +241,7 @@ public class Robot implements Observer, Runnable{
 	
 	private boolean border;
 	private boolean touched;
+	
+	private static int maxSpeed = 100;
+	private static int standardSpeed = 12;
 }
